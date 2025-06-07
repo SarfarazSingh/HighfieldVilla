@@ -1,0 +1,51 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.tabs {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tabs li {
+    padding: 10px 15px;
+    background: #eee;
+    cursor: pointer;
+}
+
+.tabs li.active {
+    background: #ccc;
+    font-weight: bold;
+}
+
+.tab {
+    display: none;
+}
+
+.tab.active {
+    display: block;
+}
+
+form div {
+    margin-bottom: 10px;
+}
+
+.message {
+    margin-top: 10px;
+    color: red;
+}
+
+#bookingTable {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#bookingTable th, #bookingTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}

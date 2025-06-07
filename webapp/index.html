@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homestay Booking</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Homestay Booking System</h1>
+    <ul class="tabs">
+        <li data-tab="entry" class="active">Booking Entry</li>
+        <li data-tab="availability">Room Availability</li>
+    </ul>
+
+    <div id="entry" class="tab active">
+        <form id="bookingForm">
+            <div>
+                <label>Guest Name
+                    <input type="text" id="guestName" required>
+                </label>
+            </div>
+            <div>
+                <label>Contact No.
+                    <input type="text" id="contactNo" required>
+                </label>
+            </div>
+            <div>
+                <label>Check In Date
+                    <input type="date" id="checkIn" required>
+                </label>
+            </div>
+            <div>
+                <label>Check Out Date
+                    <input type="date" id="checkOut" required>
+                </label>
+            </div>
+            <div>
+                <label>Advance Paid
+                    <input type="number" id="advance" min="0" required>
+                </label>
+            </div>
+            <div>
+                <label>No. of Rooms
+                    <input type="number" id="numRooms" min="1" required>
+                </label>
+            </div>
+            <div>
+                <label>Type of Rooms
+                    <select id="roomType" required>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Super Deluxe">Super Deluxe</option>
+                    </select>
+                </label>
+            </div>
+            <button type="submit">Add Booking</button>
+        </form>
+        <div id="entryMessage" class="message"></div>
+        <h2>Existing Bookings</h2>
+        <table id="bookingTable">
+            <thead>
+                <tr>
+                    <th>Guest Name</th>
+                    <th>Contact</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Rooms</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="availability" class="tab">
+        <div>
+            <label>Date
+                <input type="date" id="availDate">
+            </label>
+            <button id="checkAvailability">Check</button>
+        </div>
+        <div id="availabilityResult" class="message"></div>
+    </div>
+
+<script src="script.js"></script>
+</body>
+</html>
