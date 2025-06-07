@@ -38,6 +38,7 @@ function addRow(tb, b) {
     <td>${b.checkOut}</td>
     <td>${b.numRooms}</td>
     <td>${b.roomType}</td>
+    <td>${b.advance ? `₹ ${b.advance}` : '—'}</td>
     <td><button class="editBtn">✏️</button></td>
     <td><button class="delBtn">🗑️</button></td>`;
   tb.appendChild(tr);
