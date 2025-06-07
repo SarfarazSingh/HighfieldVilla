@@ -1,119 +1,201 @@
-const MAX_ROOMS = {
-    'Deluxe': 3,
-    'Super Deluxe': 2
-};
+/**************************************************************************
+ *  Homestay Booking  – CRUD  (Create, Read, Update, Delete) v2.1
+ *  ─ adds automatic ID migration for older saved bookings
+ **************************************************************************/
 
-function loadBookings() {
-    return JSON.parse(localStorage.getItem('bookings') || '[]');
-}
+/* ─────────────  DATA HELPERS  ───────────── */
+const MAX_ROOMS = { Deluxe: 3, 'Super Deluxe': 2 };
 
-function saveBookings(bookings) {
-    localStorage.setItem('bookings', JSON.stringify(bookings));
-}
+const loadBookings = () =>
+  JSON.parse(localStorage.getItem('bookings') || '[]');
 
-function addRow(tableBody, booking) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${booking.guestName}</td>
-        <td>${booking.contactNo}</td>
-        <td>${booking.checkIn}</td>
-        <td>${booking.checkOut}</td>
-        <td>${booking.numRooms}</td>
-        <td>${booking.roomType}</td>
-    `;
-    tableBody.appendChild(row);
+const saveBookings = (list) =>
+  localStorage.setItem('bookings', JSON.stringify(list));
+
+/*  PATCH LEGACY DATA: give every record an id (one-time)  */
+(function migrateIds() {
+  const list = loadBookings();
+  let touched = false;
+
+  list.forEach(b => {
+    if (!b.id) {                                    // legacy entry
+      b.id = (Date.now() + Math.random()).toString(36);
+      touched = true;
+    }
+  });
+
+  if (touched) saveBookings(list);                  // write back once
+})();
+
+/* ─────────────  TABLE RENDER  ───────────── */
+function addRow(tb, b) {
+  const tr = document.createElement('tr');
+  tr.dataset.id = b.id;
+  tr.innerHTML = `
+    <td>${b.guestName}</td>
+    <td>${b.contactNo}</td>
+    <td>${b.checkIn}</td>
+    <td>${b.checkOut}</td>
+    <td>${b.numRooms}</td>
+    <td>${b.roomType}</td>
+    <td><button class="editBtn">✏️</button></td>
+    <td><button class="delBtn">🗑️</button></td>`;
+  tb.appendChild(tr);
 }
 
 function renderBookings() {
-    const bookings = loadBookings();
-    const tbody = document.querySelector('#bookingTable tbody');
-    tbody.innerHTML = '';
-    bookings.forEach(b => addRow(tbody, b));
+  const tbody = document.querySelector('#bookingTable tbody');
+  tbody.innerHTML = '';
+  loadBookings().forEach(b => addRow(tbody, b));
 }
 
-function datesBetween(start, end) {
-    const dates = [];
-    let current = new Date(start);
-    while (current <= end) {
-        dates.push(current.toISOString().slice(0,10));
-        current.setDate(current.getDate() + 1);
-    }
-    return dates;
-}
+/* ─────────────  AVAILABILITY  ───────────── */
+const datesBetween = (s, e) => {
+  const arr = [];
+  for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1))
+    arr.push(d.toISOString().slice(0, 10));
+  return arr;
+};
 
-function roomsBookedForDate(date, roomType) {
-    const bookings = loadBookings();
-    return bookings.reduce((sum, b) => {
-        if (b.roomType === roomType) {
-            const start = new Date(b.checkIn);
-            const end = new Date(b.checkOut);
-            const current = new Date(date);
-            if (current >= start && current <= end) {
-                sum += parseInt(b.numRooms, 10);
-            }
-        }
-        return sum;
+const roomsBookedForDate = (date, type) => loadBookings().reduce((sum, b) =>
+  (b.roomType === type &&
+   new Date(date) >= new Date(b.checkIn) &&
+   new Date(date) <= new Date(b.checkOut))
+     ? sum + +b.numRooms : sum, 0);
+
+const isAvailable = (type, num, inD, outD, ignoreId = null) => {
+  const numInt = +num;
+  return datesBetween(new Date(inD), new Date(outD)).every(d => {
+    const booked = loadBookings().reduce((sum, b) => {
+      if (b.id === ignoreId || b.roomType !== type) return sum;
+      return (new Date(d) >= new Date(b.checkIn) &&
+              new Date(d) <= new Date(b.checkOut))
+             ? sum + +b.numRooms : sum;
     }, 0);
+    return booked + numInt <= MAX_ROOMS[type];
+  });
+};
+
+/* ─────────────  CALENDAR  ───────────── */
+const mapEvents = list => list.map(b => ({
+  title: `${b.guestName} (${b.numRooms} ${b.roomType})`,
+  start: b.checkIn,
+  end:   new Date(new Date(b.checkOut).getTime() + 86_400_000)
+            .toISOString().slice(0, 10),   // FullCalendar end is exclusive
+  allDay: true
+}));
+
+function renderCalendar() {
+  const el = document.getElementById('calendar'); if (!el) return;
+  const cal = new FullCalendar.Calendar(el, {
+    initialView: 'dayGridMonth',
+    height: 'auto',
+    events: mapEvents(loadBookings()),
+    eventColor: '#ff6f61'
+  });
+  cal.render();
 }
 
-function isAvailable(roomType, numRooms, checkIn, checkOut) {
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-    const days = datesBetween(start, end);
-    for (const day of days) {
-        const booked = roomsBookedForDate(day, roomType);
-        if (booked + parseInt(numRooms,10) > MAX_ROOMS[roomType]) {
-            return false;
-        }
-    }
-    return true;
+/* ─────────────  CRUD ACTIONS  ───────────── */
+function resetForm() {
+  document.getElementById('bookingForm').reset();
+  document.getElementById('editId').value = '';
+  document.getElementById('submitBtn').textContent = 'Add Booking';
 }
 
+function saveBooking(obj) {
+  const list = loadBookings();
+  const idx  = list.findIndex(b => b.id === obj.id);
+  if (idx > -1) list[idx] = obj; else list.push(obj);
+  saveBookings(list);
+}
+
+function deleteBooking(id) {
+  saveBookings(loadBookings().filter(b => b.id !== id));
+  renderBookings();
+  document.getElementById('calendar').innerHTML = '';
+  renderCalendar();
+}
+
+/* ─────────────  DOM READY  ───────────── */
 document.addEventListener('DOMContentLoaded', () => {
-    const tabs = document.querySelectorAll('.tabs li');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelector('.tabs li.active').classList.remove('active');
-            document.querySelector('.tab.active').classList.remove('active');
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
-        });
-    });
 
+  /* TAB SWITCH  */
+  document.querySelectorAll('.tabs li').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelector('.tabs li.active')?.classList.remove('active');
+      document.querySelector('.tab.active')?.classList.remove('active');
+      tab.classList.add('active');
+      const panel = document.getElementById(tab.dataset.tab);
+      panel.classList.add('active');
+      if (tab.dataset.tab === 'calendar') {
+        panel.innerHTML = ''; renderCalendar();
+      }
+    });
+  });
+
+  /* INITIAL RENDER */
+  renderBookings();
+  renderCalendar();
+
+  /* FORM SUBMIT  (ADD or UPDATE) */
+  document.getElementById('bookingForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.target;
+    const obj = {
+      id: f.editId.value || (Date.now() + Math.random()).toString(36),
+      guestName: f.guestName.value.trim(),
+      contactNo: f.contactNo.value.trim(),
+      checkIn:   f.checkIn.value,
+      checkOut:  f.checkOut.value,
+      advance:   f.advance.value,
+      numRooms:  f.numRooms.value,
+      roomType:  f.roomType.value
+    };
+    const msg = document.getElementById('entryMessage');
+
+    if (!isAvailable(obj.roomType, obj.numRooms, obj.checkIn, obj.checkOut, obj.id)) {
+      msg.textContent = 'Selected room type not available for chosen dates.';
+      return;
+    }
+    msg.textContent = '';
+
+    saveBooking(obj);
     renderBookings();
+    document.getElementById('calendar').innerHTML = ''; renderCalendar();
+    resetForm();
+  });
 
-    document.getElementById('bookingForm').addEventListener('submit', e => {
-        e.preventDefault();
-        const booking = {
-            guestName: document.getElementById('guestName').value.trim(),
-            contactNo: document.getElementById('contactNo').value.trim(),
-            checkIn: document.getElementById('checkIn').value,
-            checkOut: document.getElementById('checkOut').value,
-            advance: document.getElementById('advance').value,
-            numRooms: document.getElementById('numRooms').value,
-            roomType: document.getElementById('roomType').value
-        };
-        const msg = document.getElementById('entryMessage');
-        if (!isAvailable(booking.roomType, booking.numRooms, booking.checkIn, booking.checkOut)) {
-            msg.textContent = 'Selected room type not available for chosen dates.';
-            return;
-        }
-        msg.textContent = '';
-        const bookings = loadBookings();
-        bookings.push(booking);
-        saveBookings(bookings);
-        renderBookings();
-        e.target.reset();
-    });
+  /* TABLE ACTIONS: EDIT or DELETE  */
+  document.querySelector('#bookingTable tbody').addEventListener('click', e => {
+    const row = e.target.closest('tr'); if (!row) return;
+    const id  = row.dataset.id;
 
-    document.getElementById('checkAvailability').addEventListener('click', () => {
-        const date = document.getElementById('availDate').value;
-        if (!date) return;
-        const result = [];
-        for (const type in MAX_ROOMS) {
-            const booked = roomsBookedForDate(date, type);
-            result.push(`${type}: ${MAX_ROOMS[type] - booked} available`);
-        }
-        document.getElementById('availabilityResult').textContent = result.join(' | ');
-    });
+    if (e.target.classList.contains('delBtn')) {
+      if (confirm('Delete this booking?')) deleteBooking(id);
+    }
+
+    if (e.target.classList.contains('editBtn')) {
+      const b = loadBookings().find(x => x.id === id); if (!b) return;
+      const f = document.getElementById('bookingForm');
+      f.editId.value    = b.id;
+      f.guestName.value = b.guestName;
+      f.contactNo.value = b.contactNo;
+      f.checkIn.value   = b.checkIn;
+      f.checkOut.value  = b.checkOut;
+      f.advance.value   = b.advance;
+      f.numRooms.value  = b.numRooms;
+      f.roomType.value  = b.roomType;
+      document.getElementById('submitBtn').textContent = 'Update Booking';
+      document.querySelector('.tabs li[data-tab="entry"]').click();
+    }
+  });
+
+  /* AVAILABILITY CHECK */
+  document.getElementById('checkAvailability').addEventListener('click', () => {
+    const d = document.getElementById('availDate').value; if (!d) return;
+    const res = Object.keys(MAX_ROOMS).map(t =>
+      `${t}: ${MAX_ROOMS[t] - roomsBookedForDate(d, t)} available`);
+    document.getElementById('availabilityResult').textContent = res.join('  |  ');
+  });
 });

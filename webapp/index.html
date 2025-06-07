@@ -1,87 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homestay Booking</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <title>Homestay Booking System</title>
+
+    <!-- project stylesheet (keep your current styles here) -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- FullCalendar – CSS & JS -->
+    <!--  FullCalendar 6 – CSS  -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css"
+     rel="stylesheet" />
+
+    <!--  FullCalendar 6 – GLOBAL JS (must be the *index.global.min.js* build)  -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+   
+    <style>
+        /* quick tab styling in case it's not in style.css */
+        .tabs      { list-style:none; padding:0; display:flex; gap:12px; margin:0 0 20px; }
+        .tabs li   { padding:8px 20px; background:#e6e6e6; cursor:pointer; }
+        .tabs li.active { background:#bbb; font-weight:700; }
+
+        .tab       { display:none; }
+        .tab.active{ display:block; }
+
+        /* make calendar shrink nicely */
+        #calendar  { max-width:900px; margin:0 auto; }
+    </style>
 </head>
 <body>
     <h1>Homestay Booking System</h1>
+
+    <!-- ── navigation tabs ─────────────────────────────── -->
     <ul class="tabs">
-        <li data-tab="entry" class="active">Booking Entry</li>
+        <li class="active" data-tab="entry">Booking Entry</li>
         <li data-tab="availability">Room Availability</li>
+        <li data-tab="calendar">Calendar View</li>
     </ul>
 
+    <!-- ── TAB: booking entry ──────────────────────────── -->
     <div id="entry" class="tab active">
         <form id="bookingForm">
-            <div>
-                <label>Guest Name
-                    <input type="text" id="guestName" required>
-                </label>
-            </div>
-            <div>
-                <label>Contact No.
-                    <input type="text" id="contactNo" required>
-                </label>
-            </div>
-            <div>
-                <label>Check In Date
-                    <input type="date" id="checkIn" required>
-                </label>
-            </div>
-            <div>
-                <label>Check Out Date
-                    <input type="date" id="checkOut" required>
-                </label>
-            </div>
-            <div>
-                <label>Advance Paid
-                    <input type="number" id="advance" min="0" required>
-                </label>
-            </div>
-            <div>
-                <label>No. of Rooms
-                    <input type="number" id="numRooms" min="1" required>
-                </label>
-            </div>
-            <div>
-                <label>Type of Rooms
-                    <select id="roomType" required>
-                        <option value="Deluxe">Deluxe</option>
-                        <option value="Super Deluxe">Super Deluxe</option>
-                    </select>
-                </label>
-            </div>
-            <button type="submit">Add Booking</button>
-        </form>
-        <div id="entryMessage" class="message"></div>
-        <h2>Existing Bookings</h2>
-        <table id="bookingTable">
+            <input type="hidden" id="editId" /> 
+            <label>Guest Name:   <input type="text"   id="guestName"  required /></label><br />
+            <label>Contact No.:  <input type="tel"    id="contactNo"  required /></label><br />
+            <label>Check-in:     <input type="date"   id="checkIn"    required /></label><br />
+            <label>Check-out:    <input type="date"   id="checkOut"   required /></label><br />
+            <label>Advance (₹):  <input type="number" id="advance"    min="0" /></label><br />
+            <label>No. Rooms:    <input type="number" id="numRooms"   min="1" required /></label><br />
+            <label>Room Type:
+                <select id="roomType">
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Super Deluxe">Super Deluxe</option>
+                </select>
+            </label><br /><br />
+           <button type="submit" id="submitBtn">Add Booking</button>
+            <span id="entryMessage" style="margin-left:12px;color:red;"></span>
+        </form><br />
+
+        <h3>All Bookings</h3>
+        <table id="bookingTable" border="1" cellpadding="6">
             <thead>
-                <tr>
-                    <th>Guest Name</th>
-                    <th>Contact</th>
-                    <th>Check In</th>
-                    <th>Check Out</th>
-                    <th>Rooms</th>
-                    <th>Type</th>
-                </tr>
+                 <tr>
+                     <th>Guest</th><th>Contact</th><th>Check-in</th>
+                    <th>Check-out</th><th>#Rooms</th><th>Type</th>
+                     <th>Action</th>              <!-- NEW -->
+                 </tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
 
+    <!-- ── TAB: availability check ─────────────────────── -->
     <div id="availability" class="tab">
-        <div>
-            <label>Date
-                <input type="date" id="availDate">
-            </label>
-            <button id="checkAvailability">Check</button>
-        </div>
-        <div id="availabilityResult" class="message"></div>
+        <label>Select Date:
+            <input type="date" id="availDate" />
+        </label>
+        <button id="checkAvailability">Check</button>
+        <p id="availabilityResult" style="font-weight:bold;"></p>
     </div>
 
-<script src="script.js"></script>
+    <!-- ── TAB: calendar view ──────────────────────────── -->
+    <div id="calendar" class="tab"></div>
+
+    <!-- your main logic -->
+    <script src="script.js"></script>
 </body>
 </html>
