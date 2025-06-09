@@ -48,70 +48,70 @@
 </head>
 
 <body>
-  <div class ="overlay">
-  <h1>Highfield Villa Room Booking System</h1>
+  <div class="overlay">
+    <h1>Highfield Villa Room Booking System</h1>
 
-  <!-- TABS -->
-  <ul class="tabs">
-    <li class="active" data-tab="entry">Booking Entry</li>
-    <li data-tab="availability">Room Availability</li>
-    <li data-tab="calendar">Calendar View</li>
-  </ul>
+    <!-- TABS -->
+    <ul class="tabs">
+      <li class="active" data-tab="entry">Booking Entry</li>
+      <li data-tab="availability">Room Availability</li>
+      <li data-tab="calendar">Calendar View</li>
+    </ul>
 
-  <!-- DASHBOARD SUMMARY & SEARCH -->
-  <div id="dashboardSummary"></div>
-  <label for="searchInput">Search: <input type="text" id="searchInput" placeholder="Guest or Contact" /></label>
-  <button id="exportCSV">Export CSV</button>
+    <!-- DASHBOARD SUMMARY & SEARCH -->
+    <div id="dashboardSummary"></div>
+    <label for="searchInput">Search: <input type="text" id="searchInput" placeholder="Guest or Contact" /></label>
+    <button id="exportCSV">Export CSV</button>
 
-  <!-- TAB: Booking Entry -->
-  <div id="entry" class="tab active">
-    <form id="bookingForm">
-      <input type="hidden" id="editId" />
-      <label>Guest Name: <input type="text" id="guestName" required /></label><br />
-      <label>Contact No.: <input type="tel" id="contactNo" required /></label><br />
-      <label>Check-in: <input type="date" id="checkIn" required /></label><br />
-      <label>Check-out: <input type="date" id="checkOut" required /></label><br />
-      <label>Advance (₹): <input type="number" id="advance" min="0" /></label><br />
-      <label>No. Rooms: <input type="number" id="numRooms" min="1" required /></label><br />
-      <label>Room Type:
-        <select id="roomType">
-          <option value="Deluxe">Deluxe</option>
-          <option value="Super Deluxe">Super Deluxe</option>
-        </select>
-      </label><br /><br />
-      <button type="submit" id="submitBtn">Add Booking</button>
-      <span id="entryMessage" style="margin-left:12px; color:red;"></span>
-    </form><br />
+    <!-- TAB: Booking Entry -->
+    <div id="entry" class="tab active">
+      <form id="bookingForm">
+        <input type="hidden" id="editId" />
+        <label>Guest Name: <input type="text" id="guestName" required /></label><br />
+        <label>Contact No.: <input type="tel" id="contactNo" required /></label><br />
+        <label>Check-in: <input type="date" id="checkIn" required /></label><br />
+        <label>Check-out: <input type="date" id="checkOut" required /></label><br />
+        <label>Advance (₹): <input type="number" id="advance" min="0" /></label><br />
+        <label>No. Rooms: <input type="number" id="numRooms" min="1" required /></label><br />
+        <label>Room Type:
+          <select id="roomType">
+            <option value="Deluxe">Deluxe</option>
+            <option value="Super Deluxe">Super Deluxe</option>
+          </select>
+        </label><br /><br />
+        <button type="submit" id="submitBtn">Add Booking</button>
+        <span id="entryMessage" style="margin-left:12px; color:red;"></span>
+      </form><br />
 
-    <h3>All Bookings</h3>
-    <table id="bookingTable" border="1" cellpadding="6">
-      <thead>
-        <tr>
-          <th>Guest</th>
-          <th>Contact</th>
-          <th>Check-in</th>
-          <th>Check-out</th>
-          <th>#Rooms</th>
-          <th>Type</th>
-          <th>Advance</th>
-          <th>Edit</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  </div>
+      <h3>All Bookings</h3>
+      <table id="bookingTable" border="1" cellpadding="6">
+        <thead>
+          <tr>
+            <th>Guest</th>
+            <th>Contact</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>#Rooms</th>
+            <th>Type</th>
+            <th>Advance</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-  <!-- TAB: Availability Check -->
-  <div id="availability" class="tab">
-    <label>Select Date: <input type="date" id="availDate" /></label>
-    <button id="checkAvailability">Check</button>
-    <p id="availabilityResult" style="font-weight:bold;"></p>
-  </div>
+    <!-- TAB: Availability Check -->
+    <div id="availability" class="tab">
+      <label>Select Date: <input type="date" id="availDate" /></label>
+      <button id="checkAvailability">Check</button>
+      <p id="availabilityResult" style="font-weight:bold;"></p>
+    </div>
 
-  <!-- TAB: Calendar View -->
-  <div id="calendar" class="tab"></div>
+    <!-- TAB: Calendar View -->
+    <div id="calendar" class="tab"></div>
+  </div> <!-- End of .overlay -->
 
   <!-- Firebase v8 Global CDN -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
