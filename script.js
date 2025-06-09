@@ -178,6 +178,7 @@ if (checkAvailBtn && availDate && availabilityResult) {
         ${result.join(' | ')}
       </div>
     `;
+     availabilityResult.style.display = "block"; 
   });
 }
 
