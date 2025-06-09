@@ -24,9 +24,15 @@
       padding: 8px 20px;
       background: #e6e6e6;
       cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .tabs li:hover {
+      background: #d0d0d0;
     }
     .tabs li.active {
-      background: #bbb;
+      background: #007bff;
+      color: white;
       font-weight: 700;
     }
     .tab {
@@ -43,6 +49,191 @@
       margin-top: 1rem;
       font-weight: bold;
       color: #333;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #007bff;
+    }
+    
+    /* Enhanced Billing Styles */
+    .billing-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .billing-form .full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .billing-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .billing-form input, .billing-form select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .billing-form input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+    
+    .customer-search-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    #customerSuggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .suggestion-item {
+      padding: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s;
+    }
+    
+    .suggestion-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+    
+    .bill-actions {
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      margin-right: 10px;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #1e7e34;
+    }
+    
+    #billOutput {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    
+    /* Form styling improvements */
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    
+    form input, form select {
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 200px;
+    }
+    
+    form button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    form button:hover {
+      background: #0056b3;
+    }
+    
+    /* Table styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    
+    table th, table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    
+    table th {
+      background: #f8f9fa;
+      font-weight: bold;
+    }
+    
+    table tbody tr:hover {
+      background: #f5f5f5;
+    }
+    
+    /* Search and export styling */
+    #searchInput {
+      padding: 8px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    #exportCSV {
+      padding: 8px 16px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    #exportCSV:hover {
+      background: #1e7e34;
     }
   </style>
 </head>
@@ -56,36 +247,41 @@
       <li class="active" data-tab="entry">Booking Entry</li>
       <li data-tab="availability">Room Availability</li>
       <li data-tab="calendar">Calendar View</li>
-      <li data-tab="billing">Print Bill</li>
+      <li data-tab="billing">Generate Bill</li>
     </ul>
 
     <!-- DASHBOARD SUMMARY & SEARCH -->
     <div id="dashboardSummary"></div>
-    <label for="searchInput">Search: <input type="text" id="searchInput" placeholder="Guest or Contact" /></label>
-    <button id="exportCSV">Export CSV</button>
+    <div style="margin: 15px 0;">
+      <label for="searchInput">Search Bookings: 
+        <input type="text" id="searchInput" placeholder="Guest name, room type, or contact" />
+      </label>
+      <button id="exportCSV">Export CSV</button>
+    </div>
 
     <!-- TAB: Booking Entry -->
     <div id="entry" class="tab active">
+      <h3>Add New Booking</h3>
       <form id="bookingForm">
         <input type="hidden" id="editId" />
         <label>Guest Name: <input type="text" id="guestName" required /></label><br />
         <label>Contact No.: <input type="tel" id="contactNo" required /></label><br />
         <label>Check-in: <input type="date" id="checkIn" required /></label><br />
         <label>Check-out: <input type="date" id="checkOut" required /></label><br />
-        <label>Advance (₹): <input type="number" id="advance" min="0" /></label><br />
+        <label>Advance (₹): <input type="number" id="advance" min="0" placeholder="0" /></label><br />
         <label>No. Rooms: <input type="number" id="numRooms" min="1" required /></label><br />
         <label>Room Type:
           <select id="roomType">
-            <option value="Deluxe">Deluxe</option>
-            <option value="Super Deluxe">Super Deluxe</option>
+            <option value="Deluxe">Deluxe (₹2000/night)</option>
+            <option value="Super Deluxe">Super Deluxe (₹2500/night)</option>
           </select>
         </label><br /><br />
         <button type="submit" id="submitBtn">Add Booking</button>
-        <span id="entryMessage" style="margin-left:12px; color:red;"></span>
+        <span id="entryMessage" style="margin-left:12px; color:red; font-weight: bold;"></span>
       </form><br />
 
       <h3>All Bookings</h3>
-      <table id="bookingTable" border="1" cellpadding="6">
+      <table id="bookingTable">
         <thead>
           <tr>
             <th>Guest</th>
@@ -105,27 +301,69 @@
 
     <!-- TAB: Availability Check -->
     <div id="availability" class="tab">
-      <label>Select Date: <input type="date" id="availDate" /></label>
-      <button id="checkAvailability">Check</button>
-      <p id="availabilityResult" style="font-weight:bold;"></p>
+      <h3>Check Room Availability</h3>
+      <div style="margin-bottom: 20px;">
+        <label>Select Date: <input type="date" id="availDate" /></label>
+        <button id="checkAvailability" class="btn btn-primary">Check Availability</button>
+      </div>
+      <p id="availabilityResult" style="font-weight:bold; color: #333; background: #f8f9fa; padding: 10px; border-radius: 4px; display: none;"></p>
     </div>
 
     <!-- TAB: Calendar View -->
     <div id="calendar" class="tab"></div>
 
-    <!-- TAB: Billing -->
+    <!-- TAB: Enhanced Billing -->
     <div id="billing" class="tab">
-      <h3>Generate Bill</h3>
-      <form id="billForm">
-        <label>Guest Name: <input type="text" id="billGuestName" required /></label><br />
-        <label>No. of Rooms: <input type="number" id="billRooms" min="1" required /></label><br />
-        <label>No. of Nights: <input type="number" id="billNights" min="1" required /></label><br />
-        <label>Cost per Room/Night (₹): <input type="number" id="billRate" min="0" required /></label><br />
-        <label>Advance Paid (₹): <input type="number" id="billAdvance" min="0" /></label><br /><br />
-        <button type="button" id="generateBill">Generate Bill</button>
-        <button type="button" id="downloadPDF">Download PDF</button>
-      </form>
-      <div id="billOutput" style="margin-top:20px; font-weight:bold;"></div>
+      <h3>Generate Customer Bill</h3>
+      
+      <!-- Customer Search Section -->
+      <div class="customer-search-container">
+        <label for="customerSearch">Search Existing Customer:</label>
+        <input type="text" id="customerSearch" placeholder="Enter guest name or contact number to auto-fill details" />
+        <div id="customerSuggestions"></div>
+      </div>
+
+      <!-- Enhanced Bill Form -->
+      <div class="billing-form">
+        <div>
+          <label for="billGuestName">Guest Name: <span style="color: red;">*</span></label>
+          <input type="text" id="billGuestName" required />
+        </div>
+        
+        <div>
+          <label for="billContact">Contact Number:</label>
+          <input type="text" id="billContact" />
+        </div>
+        
+        <div>
+          <label for="billRooms">Number of Rooms: <span style="color: red;">*</span></label>
+          <input type="number" id="billRooms" min="1" required />
+        </div>
+        
+        <div>
+          <label for="billNights">Number of Nights: <span style="color: red;">*</span></label>
+          <input type="number" id="billNights" min="1" required />
+        </div>
+        
+        <div>
+          <label for="billRate">Rate per Room per Night (₹): <span style="color: red;">*</span></label>
+          <input type="number" id="billRate" min="0" step="0.01" required placeholder="2000 for Deluxe, 2500 for Super Deluxe" />
+        </div>
+        
+        <div>
+          <label for="billAdvance">Advance Already Paid (₹):</label>
+          <input type="number" id="billAdvance" min="0" step="0.01" value="0" />
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="bill-actions">
+        <button id="generateBill" class="btn btn-primary">Generate Bill</button>
+        <button id="downloadPDF" class="btn btn-success">Download/Print PDF</button>
+      </div>
+
+      <!-- Bill Output -->
+      <div id="billOutput" style="display: none;"></div>
     </div>
 
   </div> <!-- End of .overlay -->
