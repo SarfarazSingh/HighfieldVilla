@@ -56,6 +56,7 @@
       <li class="active" data-tab="entry">Booking Entry</li>
       <li data-tab="availability">Room Availability</li>
       <li data-tab="calendar">Calendar View</li>
+      <li data-tab="billing">Print Bill</li>
     </ul>
 
     <!-- DASHBOARD SUMMARY & SEARCH -->
@@ -111,6 +112,22 @@
 
     <!-- TAB: Calendar View -->
     <div id="calendar" class="tab"></div>
+
+    <!-- TAB: Billing -->
+    <div id="billing" class="tab">
+      <h3>Generate Bill</h3>
+      <form id="billForm">
+        <label>Guest Name: <input type="text" id="billGuestName" required /></label><br />
+        <label>No. of Rooms: <input type="number" id="billRooms" min="1" required /></label><br />
+        <label>No. of Nights: <input type="number" id="billNights" min="1" required /></label><br />
+        <label>Cost per Room/Night (₹): <input type="number" id="billRate" min="0" required /></label><br />
+        <label>Advance Paid (₹): <input type="number" id="billAdvance" min="0" /></label><br /><br />
+        <button type="button" id="generateBill">Generate Bill</button>
+        <button type="button" id="downloadPDF">Download PDF</button>
+      </form>
+      <div id="billOutput" style="margin-top:20px; font-weight:bold;"></div>
+    </div>
+
   </div> <!-- End of .overlay -->
 
   <!-- Firebase v8 Global CDN -->

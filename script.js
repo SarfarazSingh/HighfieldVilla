@@ -1,6 +1,6 @@
 // Enhanced Homestay Booking - script.js
 
-// Firebase Firestore reference (initialized in index.html)
+// Firebase Firestore reference
 const bookingsRef = firebase.firestore().collection("bookings");
 
 let bookingsList = [];
@@ -11,7 +11,6 @@ const searchInput = document.getElementById("searchInput");
 const exportBtn = document.getElementById("exportCSV");
 const summary = document.getElementById("dashboardSummary");
 
-// Utilities
 const datesBetween = (s, e) => {
   const arr = [];
   for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1))
@@ -84,7 +83,7 @@ const renderCalendar = (list) => {
     events: list.map(b => ({
       title: `${b.guestName} (${b.numRooms} ${b.roomType})`,
       start: b.checkIn,
-      end: new Date(new Date(b.checkOut).getTime() + 86_400_000).toISOString().slice(0, 10),
+      end: new Date(new Date(b.checkOut).getTime() + 86400000).toISOString().slice(0, 10),
       allDay: true
     })),
     eventColor: "#ff6f61"
@@ -97,7 +96,7 @@ bookingsRef.onSnapshot(snapshot => {
   renderBookings(bookingsList);
 });
 
-// Form submission
+// Booking form submission
 bookingForm.addEventListener("submit", async e => {
   e.preventDefault();
   const f = e.target;
@@ -127,7 +126,6 @@ bookingForm.addEventListener("submit", async e => {
   document.getElementById("submitBtn").textContent = "Add Booking";
 });
 
-// Edit/Delete Buttons
 tbody.addEventListener("click", e => {
   const row = e.target.closest("tr");
   const id = row.dataset.id;
@@ -144,8 +142,7 @@ tbody.addEventListener("click", e => {
   }
 });
 
-// Availability Checker
-checkAvailability.addEventListener("click", () => {
+document.getElementById("checkAvailability").addEventListener("click", () => {
   const d = availDate.value;
   if (!d) return;
   const result = ["Deluxe", "Super Deluxe"].map(t => {
@@ -159,7 +156,6 @@ checkAvailability.addEventListener("click", () => {
   availabilityResult.textContent = result.join(" | ");
 });
 
-// Tab switching
 [...document.querySelectorAll(".tabs li")].forEach(tab => {
   tab.addEventListener("click", () => {
     document.querySelector(".tabs li.active")?.classList.remove("active");
@@ -169,7 +165,6 @@ checkAvailability.addEventListener("click", () => {
   });
 });
 
-// Search/filter
 searchInput.addEventListener("input", () => {
   const term = searchInput.value.toLowerCase();
   const filtered = bookingsList.filter(b =>
@@ -180,7 +175,6 @@ searchInput.addEventListener("input", () => {
   renderBookings(filtered);
 });
 
-// CSV Export
 exportBtn.addEventListener("click", () => {
   const rows = [
     ["Guest Name", "Contact No.", "Check-in", "Check-out", "#Rooms", "Room Type", "Advance"]
@@ -194,4 +188,41 @@ exportBtn.addEventListener("click", () => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+});
+
+// Billing Logic
+const billForm = document.getElementById("billForm");
+const billOutput = document.getElementById("billOutput");
+
+billForm.querySelector("#generateBill").addEventListener("click", () => {
+  const name = document.getElementById("billGuestName").value;
+  const rooms = +document.getElementById("billRooms").value;
+  const nights = +document.getElementById("billNights").value;
+  const rate = +document.getElementById("billRate").value;
+  const advance = +document.getElementById("billAdvance").value;
+
+  const total = rooms * nights * rate;
+  const balance = total - advance;
+
+  billOutput.innerHTML = `
+    Guest: <strong>${name}</strong><br />
+    Total Cost: ₹<strong>${total}</strong><br />
+    Advance Paid: ₹<strong>${advance}</strong><br />
+    Pending Amount: ₹<strong>${balance}</strong>
+  `;
+});
+
+billForm.querySelector("#downloadPDF").addEventListener("click", () => {
+  const content = billOutput.innerHTML;
+  if (!content) return alert("Please generate the bill first.");
+
+  const newWindow = window.open("", "", "width=600,height=400");
+  newWindow.document.write(`
+    <html><head><title>Bill</title></head><body>
+    <h2>Highfield Villa Guest Bill</h2>
+    ${content}<br /><br />
+    <p>Thank you for your stay!</p>
+    </body></html>`);
+  newWindow.document.close();
+  newWindow.print();
 });
