@@ -289,7 +289,7 @@ const initializeBilling = () => {
             if (billRooms) billRooms.value = booking.numRooms;
             
             // Set default room rates
-            const defaultRate = booking.roomType === "Super Deluxe" ? 2500 : 2000;
+            const defaultRate = booking.roomType === "Super Deluxe" ? 6500 : 5000;
             if (billRate) billRate.value = defaultRate;
             
             customerSearch.value = booking.guestName;
