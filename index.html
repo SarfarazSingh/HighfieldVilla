@@ -101,22 +101,24 @@
   <!-- ── TAB: Calendar View ─────── -->
   <div id="calendar" class="tab"></div>
 
-  <!-- ── Firebase SDKs ───────────── -->
-  <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDpgZAeMPr6iS--j-GMQpCgVfkMz5Ju4ek",
-      authDomain: "highfieldvillabookings.firebaseapp.com",
-      projectId: "highfieldvillabookings",
-      storageBucket: "highfieldvillabookings.appspot.com",
-      messagingSenderId: "837208582127",
-      appId: "1:837208582127:web:16025d6ad6a1dd251f781a"
-    };
+ <!-- ✅ Firebase v8 Global CDN (do NOT use modular SDK) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDpgZAeMPr6iS--j-GMQpCgVfkMz5Ju4ek",
+    authDomain: "highfieldvillabookings.firebaseapp.com",
+    projectId: "highfieldvillabookings",
+    storageBucket: "highfieldvillabookings.appspot.com",
+    messagingSenderId: "837208582127",
+    appId: "1:837208582127:web:16025d6ad6a1dd251f781a"
+  };
+
+  // ✅ Initialize Firebase & Firestore (global SDK v8 syntax)
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
 
   <!-- ── Your Booking Logic ──────── -->
   <script src="script.js" defer></script>
