@@ -1,89 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Homestay Booking System</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homestay Booking System</title>
 
-    <!-- project stylesheet (keep your current styles here) -->
-    <link rel="stylesheet" href="style.css" />
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
 
-    <!-- FullCalendar – CSS & JS -->
-    <!--  FullCalendar 6 – CSS  -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css"
-     rel="stylesheet" />
+  <!-- FullCalendar Global Build -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-    <!--  FullCalendar 6 – GLOBAL JS (must be the *index.global.min.js* build)  -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-   
-    <style>
-        /* quick tab styling in case it's not in style.css */
-        .tabs      { list-style:none; padding:0; display:flex; gap:12px; margin:0 0 20px; }
-        .tabs li   { padding:8px 20px; background:#e6e6e6; cursor:pointer; }
-        .tabs li.active { background:#bbb; font-weight:700; }
-
-        .tab       { display:none; }
-        .tab.active{ display:block; }
-
-        /* make calendar shrink nicely */
-        #calendar  { max-width:900px; margin:0 auto; }
-    </style>
+  <style>
+    .tabs {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      gap: 12px;
+      margin: 0 0 20px;
+    }
+    .tabs li {
+      padding: 8px 20px;
+      background: #e6e6e6;
+      cursor: pointer;
+    }
+    .tabs li.active {
+      background: #bbb;
+      font-weight: 700;
+    }
+    .tab {
+      display: none;
+    }
+    .tab.active {
+      display: block;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>Homestay Booking System</h1>
+  <h1>Homestay Booking System</h1>
 
-    <!-- ── navigation tabs ─────────────────────────────── -->
-    <ul class="tabs">
-        <li class="active" data-tab="entry">Booking Entry</li>
-        <li data-tab="availability">Room Availability</li>
-        <li data-tab="calendar">Calendar View</li>
-    </ul>
+  <!-- ── TABS ───────────────────── -->
+  <ul class="tabs">
+    <li class="active" data-tab="entry">Booking Entry</li>
+    <li data-tab="availability">Room Availability</li>
+    <li data-tab="calendar">Calendar View</li>
+  </ul>
 
-    <!-- ── TAB: booking entry ──────────────────────────── -->
-    <div id="entry" class="tab active">
-        <form id="bookingForm">
-            <input type="hidden" id="editId" /> 
-            <label>Guest Name:   <input type="text"   id="guestName"  required /></label><br />
-            <label>Contact No.:  <input type="tel"    id="contactNo"  required /></label><br />
-            <label>Check-in:     <input type="date"   id="checkIn"    required /></label><br />
-            <label>Check-out:    <input type="date"   id="checkOut"   required /></label><br />
-            <label>Advance (₹):  <input type="number" id="advance"    min="0" /></label><br />
-            <label>No. Rooms:    <input type="number" id="numRooms"   min="1" required /></label><br />
-            <label>Room Type:
-                <select id="roomType">
-                    <option value="Deluxe">Deluxe</option>
-                    <option value="Super Deluxe">Super Deluxe</option>
-                </select>
-            </label><br /><br />
-           <button type="submit" id="submitBtn">Add Booking</button>
-            <span id="entryMessage" style="margin-left:12px;color:red;"></span>
-        </form><br />
+  <!-- ── TAB: Booking Entry ─────── -->
+  <div id="entry" class="tab active">
+    <form id="bookingForm">
+      <input type="hidden" id="editId" />
+      <label>Guest Name: <input type="text" id="guestName" required /></label><br />
+      <label>Contact No.: <input type="tel" id="contactNo" required /></label><br />
+      <label>Check-in: <input type="date" id="checkIn" required /></label><br />
+      <label>Check-out: <input type="date" id="checkOut" required /></label><br />
+      <label>Advance (₹): <input type="number" id="advance" min="0" /></label><br />
+      <label>No. Rooms: <input type="number" id="numRooms" min="1" required /></label><br />
+      <label>Room Type:
+        <select id="roomType">
+          <option value="Deluxe">Deluxe</option>
+          <option value="Super Deluxe">Super Deluxe</option>
+        </select>
+      </label><br /><br />
+      <button type="submit" id="submitBtn">Add Booking</button>
+      <span id="entryMessage" style="margin-left:12px; color:red;"></span>
+    </form><br />
 
-        <h3>All Bookings</h3>
-        <table id="bookingTable" border="1" cellpadding="6">
-            <thead>
-                 <tr>
-                     <th>Guest</th><th>Contact</th><th>Check-in</th>
-                    <th>Check-out</th><th>#Rooms</th><th>Type</th>
-                     <th>Advance</th><th>Action</th>          <!-- NEW -->
-                 </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+    <h3>All Bookings</h3>
+    <table id="bookingTable" border="1" cellpadding="6">
+      <thead>
+        <tr>
+          <th>Guest</th>
+          <th>Contact</th>
+          <th>Check-in</th>
+          <th>Check-out</th>
+          <th>#Rooms</th>
+          <th>Type</th>
+          <th>Advance</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-    <!-- ── TAB: availability check ─────────────────────── -->
-    <div id="availability" class="tab">
-        <label>Select Date:
-            <input type="date" id="availDate" />
-        </label>
-        <button id="checkAvailability">Check</button>
-        <p id="availabilityResult" style="font-weight:bold;"></p>
-    </div>
+  <!-- ── TAB: Availability Check ── -->
+  <div id="availability" class="tab">
+    <label>Select Date: <input type="date" id="availDate" /></label>
+    <button id="checkAvailability">Check</button>
+    <p id="availabilityResult" style="font-weight:bold;"></p>
+  </div>
 
-    <!-- ── TAB: calendar view ──────────────────────────── -->
-    <div id="calendar" class="tab"></div>
+  <!-- ── TAB: Calendar View ─────── -->
+  <div id="calendar" class="tab"></div>
 
-    <!-- your main logic -->
-    <script src="script.js"></script>
+  <!-- ── Firebase SDKs ───────────── -->
+  <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDpgZAeMPr6iS--j-GMQpCgVfkMz5Ju4ek",
+      authDomain: "highfieldvillabookings.firebaseapp.com",
+      projectId: "highfieldvillabookings",
+      storageBucket: "highfieldvillabookings.appspot.com",
+      messagingSenderId: "837208582127",
+      appId: "1:837208582127:web:16025d6ad6a1dd251f781a"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
+  <!-- ── Your Booking Logic ──────── -->
+  <script src="script.js" defer></script>
 </body>
 </html>
