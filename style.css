@@ -1,7 +1,16 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background-image: url('background.jpeg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
+
 
 .tabs {
     list-style: none;
@@ -49,3 +58,11 @@ form div {
     border: 1px solid #ddd;
     padding: 8px;
 }
+
+.overlay {
+  background-color: rgba(255, 255, 255, 0.85); /* light white overlay */
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px;
+}
+
