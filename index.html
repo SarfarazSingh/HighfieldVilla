@@ -39,20 +39,30 @@
       max-width: 900px;
       margin: 0 auto;
     }
+    #dashboardSummary {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #333;
+    }
   </style>
 </head>
 
 <body>
   <h1>Homestay Booking System</h1>
 
-  <!-- ── TABS ───────────────────── -->
+  <!-- TABS -->
   <ul class="tabs">
     <li class="active" data-tab="entry">Booking Entry</li>
     <li data-tab="availability">Room Availability</li>
     <li data-tab="calendar">Calendar View</li>
   </ul>
 
-  <!-- ── TAB: Booking Entry ─────── -->
+  <!-- DASHBOARD SUMMARY & SEARCH -->
+  <div id="dashboardSummary"></div>
+  <label for="searchInput">Search: <input type="text" id="searchInput" placeholder="Guest or Contact" /></label>
+  <button id="exportCSV">Export CSV</button>
+
+  <!-- TAB: Booking Entry -->
   <div id="entry" class="tab active">
     <form id="bookingForm">
       <input type="hidden" id="editId" />
@@ -91,36 +101,33 @@
     </table>
   </div>
 
-  <!-- ── TAB: Availability Check ── -->
+  <!-- TAB: Availability Check -->
   <div id="availability" class="tab">
     <label>Select Date: <input type="date" id="availDate" /></label>
     <button id="checkAvailability">Check</button>
     <p id="availabilityResult" style="font-weight:bold;"></p>
   </div>
 
-  <!-- ── TAB: Calendar View ─────── -->
+  <!-- TAB: Calendar View -->
   <div id="calendar" class="tab"></div>
 
- <!-- ✅ Firebase v8 Global CDN (do NOT use modular SDK) -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <!-- Firebase v8 Global CDN -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDpgZAeMPr6iS--j-GMQpCgVfkMz5Ju4ek",
+      authDomain: "highfieldvillabookings.firebaseapp.com",
+      projectId: "highfieldvillabookings",
+      storageBucket: "highfieldvillabookings.appspot.com",
+      messagingSenderId: "837208582127",
+      appId: "1:837208582127:web:16025d6ad6a1dd251f781a"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDpgZAeMPr6iS--j-GMQpCgVfkMz5Ju4ek",
-    authDomain: "highfieldvillabookings.firebaseapp.com",
-    projectId: "highfieldvillabookings",
-    storageBucket: "highfieldvillabookings.appspot.com",
-    messagingSenderId: "837208582127",
-    appId: "1:837208582127:web:16025d6ad6a1dd251f781a"
-  };
-
-  // ✅ Initialize Firebase & Firestore (global SDK v8 syntax)
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-
-  <!-- ── Your Booking Logic ──────── -->
+  <!-- Booking Logic -->
   <script src="script.js" defer></script>
 </body>
 </html>
