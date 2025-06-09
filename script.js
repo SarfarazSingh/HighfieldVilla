@@ -1,4 +1,4 @@
-// Enhanced Homestay Booking - script.js (Fixed Billing Module)
+// Enhanced Homestay Booking - script.js (Professional Invoice Module)
 
 // Firebase Firestore reference
 const bookingsRef = firebase.firestore().collection("bookings");
@@ -41,7 +41,7 @@ const updateSummary = () => {
       return acc;
     }, {});
   const deluxeLeft = 3 - (occupiedToday["Deluxe"] || 0);
-  const superLeft = 2 - (occupiedToda‍y["Super Deluxe"] || 0);
+  const superLeft = 2 - (occupiedToday["Super Deluxe"] || 0);
 
   summary.innerHTML = `
     <p>Total Bookings: <strong>${total}</strong></p>
@@ -214,7 +214,7 @@ if (exportBtn) {
   });
 }
 
-// FIXED BILLING LOGIC
+// PROFESSIONAL INVOICE BILLING LOGIC
 const initializeBilling = () => {
   const customerSearch = document.getElementById("customerSearch");
   const customerSuggestions = document.getElementById("customerSuggestions");
@@ -249,8 +249,16 @@ const initializeBilling = () => {
         matches.forEach(booking => {
           const div = document.createElement("div");
           div.className = "suggestion-item";
-          div.style.cssText = "padding: 8px; cursor: pointer; border-bottom: 1px solid #eee;";
-          div.innerHTML = `<strong>${booking.guestName}</strong> - ${booking.contactNo}`;
+          div.style.cssText = "padding: 12px; cursor: pointer; border-bottom: 1px solid #e0e0e0; transition: background-color 0.2s;";
+          div.innerHTML = `<strong style="color: #2c3e50;">${booking.guestName}</strong><br><small style="color: #7f8c8d;">${booking.contactNo}</small>`;
+          
+          div.addEventListener("mouseenter", () => {
+            div.style.backgroundColor = "#f8f9fa";
+          });
+          
+          div.addEventListener("mouseleave", () => {
+            div.style.backgroundColor = "white";
+          });
           
           div.addEventListener("click", () => {
             // Fill in customer details
@@ -289,7 +297,7 @@ const initializeBilling = () => {
     });
   }
 
-  // Generate Bill functionality
+  // Generate Professional Invoice functionality
   if (generateBillBtn && billOutput) {
     generateBillBtn.addEventListener("click", () => {
       const name = billGuestName?.value?.trim() || '';
@@ -298,6 +306,12 @@ const initializeBilling = () => {
       const nights = parseInt(billNights?.value) || 0;
       const rate = parseFloat(billRate?.value) || 0;
       const advance = parseFloat(billAdvance?.value) || 0;
+
+      // Find booking details for check-in/check-out dates
+      const booking = bookingsList.find(b => 
+        b.guestName.toLowerCase() === name.toLowerCase() || 
+        b.contactNo === contact
+      );
 
       // Validation
       if (!name) {
@@ -311,42 +325,305 @@ const initializeBilling = () => {
 
       const total = rooms * nights * rate;
       const balance = total - advance;
-      const currentDate = new Date().toLocaleDateString('en-IN');
+      const currentDate = new Date().toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const invoiceNumber = 'HV' + Date.now().toString().slice(-8);
 
       billOutput.innerHTML = `
-        <div style="border: 2px solid #333; padding: 20px; background: white; font-family: Arial, sans-serif;">
-          <h3 style="text-align: center; margin-bottom: 20px; color: #333;">HIGHFIELD VILLA</h3>
-          <h4 style="text-align: center; margin-bottom: 30px; color: #666;">Guest Bill</h4>
-          
-          <div style="margin-bottom: 20px;">
-            <p><strong>Date:</strong> ${currentDate}</p>
-            <p><strong>Guest Name:</strong> ${name}</p>
-            <p><strong>Contact:</strong> ${contact}</p>
+        <div style="
+          max-width: 800px;
+          margin: 0 auto;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 2px;
+          border-radius: 15px;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        ">
+          <div style="
+            background: white;
+            border-radius: 13px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+          ">
+            <!-- Header Section -->
+            <div style="
+              text-align: center;
+              margin-bottom: 40px;
+              position: relative;
+            ">
+              <div style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-size: 32px;
+                font-weight: bold;
+                margin-bottom: 8px;
+                letter-spacing: 2px;
+              ">
+                HIGHFIELD VILLA
+              </div>
+              <div style="
+                color: #7f8c8d;
+                font-size: 16px;
+                margin-bottom: 20px;
+                font-weight: 300;
+              ">
+                Premium Homestay Experience
+              </div>
+              <div style="
+                background: linear-gradient(90deg, #667eea, #764ba2);
+                height: 3px;
+                width: 100px;
+                margin: 0 auto;
+                border-radius: 2px;
+              "></div>
+            </div>
+
+            <!-- Invoice Title -->
+            <div style="
+              text-align: center;
+              margin-bottom: 40px;
+            ">
+              <h2 style="
+                color: #2c3e50;
+                font-size: 28px;
+                margin: 0;
+                font-weight: 600;
+                letter-spacing: 1px;
+              ">CUSTOMER INVOICE</h2>
+              <div style="
+                color: #7f8c8d;
+                font-size: 14px;
+                margin-top: 8px;
+              ">
+                Invoice #${invoiceNumber} | Date: ${currentDate}
+              </div>
+            </div>
+
+            <!-- Guest Information Card -->
+            <div style="
+              background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+              border-radius: 12px;
+              padding: 25px;
+              margin-bottom: 30px;
+              border-left: 5px solid #667eea;
+            ">
+              <h3 style="
+                color: #2c3e50;
+                margin: 0 0 20px 0;
+                font-size: 18px;
+                font-weight: 600;
+              ">Guest Information</h3>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                  <div style="color: #7f8c8d; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Guest Name</div>
+                  <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">${name}</div>
+                </div>
+                <div>
+                  <div style="color: #7f8c8d; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Contact Number</div>
+                  <div style="color: #2c3e50; font-size: 16px; font-weight: 600;">${contact}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Booking Details Grid -->
+            <div style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 20px;
+              margin-bottom: 30px;
+            ">
+              <div style="
+                background: white;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                transition: transform 0.2s;
+              ">
+                <div style="color: #667eea; font-size: 24px; font-weight: bold; margin-bottom: 8px;">${rooms}</div>
+                <div style="color: #7f8c8d; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Total Rooms Booked</div>
+              </div>
+              
+              <div style="
+                background: white;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+              ">
+                <div style="color: #667eea; font-size: 18px; font-weight: bold; margin-bottom: 8px;">${booking ? new Date(booking.checkIn).toLocaleDateString('en-IN') : 'N/A'}</div>
+                <div style="color: #7f8c8d; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Check In Date</div>
+              </div>
+              
+              <div style="
+                background: white;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+              ">
+                <div style="color: #667eea; font-size: 18px; font-weight: bold; margin-bottom: 8px;">${booking ? new Date(booking.checkOut).toLocaleDateString('en-IN') : 'N/A'}</div>
+                <div style="color: #7f8c8d; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Check Out Date</div>
+              </div>
+            </div>
+
+            <!-- Billing Summary -->
+            <div style="
+              background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+              color: white;
+              border-radius: 12px;
+              padding: 30px;
+              margin-bottom: 30px;
+            ">
+              <h3 style="
+                margin: 0 0 25px 0;
+                font-size: 20px;
+                font-weight: 600;
+                text-align: center;
+              ">Billing Summary</h3>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                <span style="font-size: 16px;">Room Rate (per night)</span>
+                <span style="font-size: 16px; font-weight: 600;">₹${rate.toLocaleString('en-IN')}</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                <span style="font-size: 16px;">Total Nights</span>
+                <span style="font-size: 16px; font-weight: 600;">${nights}</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.3);">
+                <span style="font-size: 18px; font-weight: 600;">Total Tariff</span>
+                <span style="font-size: 20px; font-weight: bold;">₹${total.toLocaleString('en-IN')}</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 16px;">Advance Paid</span>
+                <span style="font-size: 16px; font-weight: 600;">₹${advance.toLocaleString('en-IN')}</span>
+              </div>
+              
+              <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: rgba(255,255,255,0.1);
+                padding: 15px;
+                border-radius: 8px;
+                margin-top: 20px;
+              ">
+                <span style="font-size: 20px; font-weight: bold;">
+                  ${balance >= 0 ? 'Amount to be Paid' : 'Refund Due'}
+                </span>
+                <span style="
+                  font-size: 24px;
+                  font-weight: bold;
+                  color: ${balance >= 0 ? '#e74c3c' : '#2ecc71'};
+                ">
+                  ₹${Math.abs(balance).toLocaleString('en-IN')}
+                </span>
+              </div>
+            </div>
+
+            <!-- Thank You Message -->
+            <div style="
+              text-align: center;
+              padding: 25px;
+              background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+              border-radius: 12px;
+              margin-bottom: 30px;
+            ">
+              <p style="
+                color: #2c3e50;
+                font-size: 16px;
+                line-height: 1.6;
+                margin: 0 0 15px 0;
+              ">
+                We hope you had a pleasant stay at Highfield Villa. Thank you for choosing us.<br>
+                We look forward to welcoming you again soon!
+              </p>
+              <div style="
+                color: #7f8c8d;
+                font-size: 14px;
+                margin-top: 15px;
+              ">
+                For any queries or future bookings, contact us at <strong>+91-8427228937</strong><br>
+                Visit <strong>www.highfieldvilla.com</strong>
+              </div>
+            </div>
+
+            <!-- Signatures Section -->
+            <div style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 40px;
+              margin-top: 40px;
+              padding-top: 30px;
+              border-top: 2px solid #e9ecef;
+            ">
+              <div style="text-align: center;">
+                <div style="
+                  border-bottom: 2px solid #2c3e50;
+                  width: 200px;
+                  margin: 0 auto 10px auto;
+                  height: 40px;
+                "></div>
+                <div style="
+                  color: #7f8c8d;
+                  font-size: 14px;
+                  font-weight: 600;
+                  text-transform: uppercase;
+                  letter-spacing: 1px;
+                ">Guest Signature</div>
+              </div>
+              
+              <div style="text-align: center;">
+                <div style="
+                  border-bottom: 2px solid #2c3e50;
+                  width: 200px;
+                  margin: 0 auto 10px auto;
+                  height: 40px;
+                "></div>
+                <div style="
+                  color: #7f8c8d;
+                  font-size: 14px;
+                  font-weight: 600;
+                  text-transform: uppercase;
+                  letter-spacing: 1px;
+                ">Manager Signature</div>
+              </div>
+            </div>
+
+            <!-- Decorative Elements -->
+            <div style="
+              position: absolute;
+              top: -50px;
+              right: -50px;
+              width: 100px;
+              height: 100px;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              opacity: 0.1;
+              border-radius: 50%;
+            "></div>
+            
+            <div style="
+              position: absolute;
+              bottom: -30px;
+              left: -30px;
+              width: 60px;
+              height: 60px;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              opacity: 0.1;
+              border-radius: 50%;
+            "></div>
           </div>
-          
-          <hr style="margin: 20px 0;">
-          
-          <div style="margin-bottom: 20px;">
-            <p><strong>Number of Rooms:</strong> ${rooms}</p>
-            <p><strong>Number of Nights:</strong> ${nights}</p>
-            <p><strong>Rate per Room per Night:</strong> ₹${rate}</p>
-          </div>
-          
-          <hr style="margin: 20px 0;">
-          
-          <div style="margin-bottom: 20px;">
-            <p><strong>Total Cost:</strong> ₹${total.toFixed(2)}</p>
-            <p><strong>Advance Paid:</strong> ₹${advance.toFixed(2)}</p>
-            <p style="font-size: 18px; color: ${balance >= 0 ? '#d9534f' : '#5cb85c'};"><strong>
-              ${balance >= 0 ? 'Pending Amount' : 'Refund Due'}: ₹${Math.abs(balance).toFixed(2)}
-            </strong></p>
-          </div>
-          
-          <hr style="margin: 20px 0;">
-          
-          <p style="text-align: center; margin-top: 30px; font-style: italic;">
-            Thank you for choosing Highfield Villa!
-          </p>
         </div>
       `;
       
@@ -354,34 +631,80 @@ const initializeBilling = () => {
     });
   }
 
-  // Download PDF functionality
+  // Download PDF functionality with enhanced styling
   if (downloadPDFBtn && billOutput) {
     downloadPDFBtn.addEventListener("click", () => {
       const content = billOutput.innerHTML;
       if (!content || billOutput.style.display === "none") {
-        alert("Please generate the bill first.");
+        alert("Please generate the invoice first.");
         return;
       }
 
-      const printWindow = window.open("", "_blank", "width=800,height=600");
+      const printWindow = window.open("", "_blank", "width=900,height=700");
       printWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Guest Bill - Highfield Villa</title>
+          <title>Customer Invoice - Highfield Villa</title>
+          <meta charset="UTF-8">
           <style>
-            body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            body { 
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              background: #f5f5f5;
+              padding: 20px;
+            }
             @media print {
-              body { margin: 0; }
-              .no-print { display: none; }
+              body { 
+                margin: 0;
+                padding: 10px;
+                background: white;
+              }
+              .no-print { 
+                display: none !important; 
+              }
+            }
+            .print-buttons {
+              text-align: center;
+              margin: 20px 0;
+              padding: 20px;
+              background: white;
+              border-radius: 10px;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            .btn {
+              display: inline-block;
+              padding: 12px 24px;
+              margin: 0 10px;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+              text-decoration: none;
+              border-radius: 6px;
+              border: none;
+              cursor: pointer;
+              font-size: 14px;
+              font-weight: 600;
+              transition: transform 0.2s;
+            }
+            .btn:hover {
+              transform: translateY(-2px);
+            }
+            .btn-secondary {
+              background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
             }
           </style>
         </head>
         <body>
           ${content}
-          <div class="no-print" style="text-align: center; margin-top: 20px;">
-            <button onclick="window.print()">Print Bill</button>
-            <button onclick="window.close()">Close</button>
+          <div class="print-buttons no-print">
+            <button class="btn" onclick="window.print()">🖨️ Print Invoice</button>
+            <button class="btn btn-secondary" onclick="window.close()">✖️ Close Window</button>
           </div>
         </body>
         </html>
@@ -391,7 +714,7 @@ const initializeBilling = () => {
       
       // Auto print after a short delay
       setTimeout(() => {
-        printWindow.print();
+        printWindow.focus();
       }, 500);
     });
   }
