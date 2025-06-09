@@ -640,6 +640,7 @@ const initializeBilling = () => {
         return;
       }
 
+      // Create a new window for the invoice
       const printWindow = window.open("", "_blank", "width=900,height=700");
       printWindow.document.write(`
         <!DOCTYPE html>
@@ -660,17 +661,7 @@ const initializeBilling = () => {
               background: #f5f5f5;
               padding: 20px;
             }
-            @media print {
-              body { 
-                margin: 0;
-                padding: 10px;
-                background: white;
-              }
-              .no-print { 
-                display: none !important; 
-              }
-            }
-            .print-buttons {
+            .download-section {
               text-align: center;
               margin: 20px 0;
               padding: 20px;
@@ -702,8 +693,8 @@ const initializeBilling = () => {
         </head>
         <body>
           ${content}
-          <div class="print-buttons no-print">
-            <button class="btn" onclick="window.print()">🖨️ Print Invoice</button>
+          <div class="download-section">
+            <p style="margin-bottom: 15px; color: #7f8c8d;">Right-click on the invoice and select "Save as PDF" or use your browser's save option.</p>
             <button class="btn btn-secondary" onclick="window.close()">✖️ Close Window</button>
           </div>
         </body>
@@ -711,11 +702,7 @@ const initializeBilling = () => {
       `);
       
       printWindow.document.close();
-      
-      // Auto print after a short delay
-      setTimeout(() => {
-        printWindow.focus();
-      }, 500);
+      printWindow.focus();
     });
   }
 };
