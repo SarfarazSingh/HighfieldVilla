@@ -154,16 +154,30 @@ const availabilityResult = document.getElementById("availabilityResult");
 if (checkAvailBtn && availDate && availabilityResult) {
   checkAvailBtn.addEventListener("click", () => {
     const d = availDate.value;
-    if (!d) return;
+    if (!d) {
+      availabilityResult.innerHTML = '<span style="color: #e74c3c;">Please select a date first</span>';
+      return;
+    }
+    
+    const selectedDate = new Date(d);
     const result = ["Deluxe", "Super Deluxe"].map(t => {
       const booked = bookingsList.reduce((sum, b) => {
         if (b.roomType !== t) return sum;
-        const cur = new Date(d);
-        return (cur >= new Date(b.checkIn) && cur <= new Date(b.checkOut)) ? sum + +b.numRooms : sum;
+        const checkIn = new Date(b.checkIn);
+        const checkOut = new Date(b.checkOut);
+        // Check if selected date falls within booking period
+        return (selectedDate >= checkIn && selectedDate <= checkOut) ? sum + parseInt(b.numRooms) : sum;
       }, 0);
-      return `${t}: ${(t === "Deluxe" ? 3 : 2) - booked} available`;
+      const available = (t === "Deluxe" ? 3 : 2) - booked;
+      return `<span style="color: ${available > 0 ? '#27ae60' : '#e74c3c'}; font-weight: bold;">${t}: ${available} available</span>`;
     });
-    availabilityResult.textContent = result.join(" | ");
+    
+    availabilityResult.innerHTML = `
+      <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498db; margin-top: 10px;">
+        <strong>Availability for ${selectedDate.toLocaleDateString('en-IN')}:</strong><br>
+        ${result.join(' | ')}
+      </div>
+    `;
   });
 }
 
@@ -275,7 +289,7 @@ const initializeBilling = () => {
             if (billRooms) billRooms.value = booking.numRooms;
             
             // Set default room rates
-            const defaultRate = booking.roomType === "Super Deluxe" ? 6500 : 5000;
+            const defaultRate = booking.roomType === "Super Deluxe" ? 2500 : 2000;
             if (billRate) billRate.value = defaultRate;
             
             customerSearch.value = booking.guestName;
@@ -631,7 +645,7 @@ const initializeBilling = () => {
     });
   }
 
-  // Download PDF functionality with enhanced styling
+  // Download Image functionality with html2canvas
   if (downloadPDFBtn && billOutput) {
     downloadPDFBtn.addEventListener("click", () => {
       const content = billOutput.innerHTML;
@@ -640,70 +654,141 @@ const initializeBilling = () => {
         return;
       }
 
-      // Create a new window for the invoice
-      const printWindow = window.open("", "_blank", "width=900,height=700");
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Customer Invoice - Highfield Villa</title>
-          <meta charset="UTF-8">
-          <style>
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            body { 
-              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              line-height: 1.6;
-              color: #333;
-              background: #f5f5f5;
-              padding: 20px;
-            }
-            .download-section {
-              text-align: center;
-              margin: 20px 0;
-              padding: 20px;
-              background: white;
-              border-radius: 10px;
-              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }
-            .btn {
-              display: inline-block;
-              padding: 12px 24px;
-              margin: 0 10px;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white;
-              text-decoration: none;
-              border-radius: 6px;
-              border: none;
-              cursor: pointer;
-              font-size: 14px;
-              font-weight: 600;
-              transition: transform 0.2s;
-            }
-            .btn:hover {
-              transform: translateY(-2px);
-            }
-            .btn-secondary {
-              background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-            }
-          </style>
-        </head>
-        <body>
-          ${content}
-          <div class="download-section">
-            <p style="margin-bottom: 15px; color: #7f8c8d;">Right-click on the invoice and select "Save as PDF" or use your browser's save option.</p>
-            <button class="btn btn-secondary" onclick="window.close()">✖️ Close Window</button>
-          </div>
-        </body>
-        </html>
-      `);
-      
-      printWindow.document.close();
-      printWindow.focus();
+      // Create a temporary div for capturing
+      const captureDiv = document.createElement('div');
+      captureDiv.style.cssText = `
+        position: fixed;
+        top: -9999px;
+        left: -9999px;
+        width: 800px;
+        background: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      `;
+      captureDiv.innerHTML = content;
+      document.body.appendChild(captureDiv);
+
+      // Use html2canvas if available, otherwise fallback to simple method
+      if (typeof html2canvas !== 'undefined') {
+        html2canvas(captureDiv, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          width: 800,
+          height: captureDiv.scrollHeight
+        }).then(canvas => {
+          // Create download link
+          const link = document.createElement('a');
+          link.download = `Highfield_Villa_Invoice_${Date.now()}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          
+          // Clean up
+          document.body.removeChild(captureDiv);
+        }).catch(error => {
+          console.error('Error generating image:', error);
+          // Fallback to window method
+          openInvoiceWindow(content);
+          document.body.removeChild(captureDiv);
+        });
+      } else {
+        // Fallback method - open in new window
+        openInvoiceWindow(content);
+        document.body.removeChild(captureDiv);
+      }
     });
+  }
+
+  // Helper function to open invoice in new window
+  function openInvoiceWindow(content) {
+    const printWindow = window.open("", "_blank", "width=900,height=700");
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Customer Invoice - Highfield Villa</title>
+        <meta charset="UTF-8">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+          }
+          .download-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          }
+          .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 0 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s;
+          }
+          .btn:hover {
+            transform: translateY(-2px);
+          }
+          .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+          }
+        </style>
+      </head>
+      <body>
+        <div id="invoice-content">
+          ${content}
+        </div>
+        <div class="download-section">
+          <button class="btn" onclick="downloadAsImage()">📥 Download as Image</button>
+          <button class="btn btn-secondary" onclick="window.close()">✖️ Close Window</button>
+        </div>
+        
+        <script>
+          function downloadAsImage() {
+            const element = document.getElementById('invoice-content');
+            if (typeof html2canvas !== 'undefined') {
+              html2canvas(element, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                useCORS: true,
+                allowTaint: true
+              }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Highfield_Villa_Invoice_' + Date.now() + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+              }).catch(error => {
+                alert('Error generating image. Please try right-clicking on the invoice and select "Save as PDF" instead.');
+              });
+            } else {
+              alert('Image download not available. Please right-click on the invoice and select "Save as PDF".');
+            }
+          }
+        </script>
+      </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
   }
 };
 
