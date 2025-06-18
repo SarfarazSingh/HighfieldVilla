@@ -937,9 +937,12 @@ const initializeVoucher = () => {
               <h3 style="color:#2c3e50;margin-bottom:5px;">Pet Policy</h3>
               <p style="margin:0;color:#2c3e50;">Pets allowed at no extra charge</p>
             </div>
-              <div style="margin-bottom:20px;">
+            
+            <div style="margin-bottom:20px;">
               <h3 style="color:#2c3e50;margin-bottom:5px;">Child Charges</h3>
-              <p style="margin:0;color:#2c3e50;">Children above the age of 10 years to be considered as adults and to be counted towards booking of room.</p>
+              <p style="margin:0;color:#2c3e50;">
+              Children above the age of 10 years to be considered as adults and to be counted towards booking of room.
+            </p>
             </div>
 
             <div style="margin-bottom:20px;">
