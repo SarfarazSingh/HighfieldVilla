@@ -239,6 +239,7 @@ const initializeBilling = () => {
   const billNights = document.getElementById("billNights");
   const billRate = document.getElementById("billRate");
   const billAdvance = document.getElementById("billAdvance");
+  const billMisc = document.getElementById("billMisc");
   const generateBillBtn = document.getElementById("generateBill");
   const downloadPDFBtn = document.getElementById("downloadPDF");
   const billOutput = document.getElementById("billOutput");
@@ -321,6 +322,7 @@ const initializeBilling = () => {
       const nights = parseInt(billNights?.value) || 0;
       const rate = parseFloat(billRate?.value) || 0;
       const advance = parseFloat(billAdvance?.value) || 0;
+      const misc = parseFloat(billMisc?.value) || 0;
 
       // Find booking details for check-in/check-out dates
       const booking = bookingsList.find(b => 
@@ -338,7 +340,8 @@ const initializeBilling = () => {
         return;
       }
 
-      const total = rooms * nights * rate;
+      const tariff = rooms * nights * rate;
+      const total = tariff + misc;
       const balance = total - advance;
       const currentDate = new Date().toLocaleDateString('en-IN', {
         year: 'numeric',
@@ -515,8 +518,18 @@ const initializeBilling = () => {
                 <span style="font-size: 16px; font-weight: 600;">${nights}</span>
               </div>
               
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                <span style="font-size: 16px;">Misc. Charges</span>
+                <span style="font-size: 16px; font-weight: 600;">₹${misc.toLocaleString('en-IN')}</span>
+              </div>
+
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.3);">
                 <span style="font-size: 18px; font-weight: 600;">Total Tariff</span>
+                <span style="font-size: 20px; font-weight: bold;">₹${tariff.toLocaleString('en-IN')}</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.3);">
+                <span style="font-size: 18px; font-weight: 600;">Grand Total</span>
                 <span style="font-size: 20px; font-weight: bold;">₹${total.toLocaleString('en-IN')}</span>
               </div>
               
