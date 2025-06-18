@@ -808,10 +808,202 @@ const initializeBilling = () => {
       </html>
     `);
     
+  printWindow.document.close();
+  printWindow.focus();
+}
+};
+
+const initializeVoucher = () => {
+  const search = document.getElementById('voucherCustomerSearch');
+  const suggestions = document.getElementById('voucherCustomerSuggestions');
+  const nameField = document.getElementById('voucherGuestName');
+  const contactField = document.getElementById('voucherContact');
+  const checkInField = document.getElementById('voucherCheckIn');
+  const checkOutField = document.getElementById('voucherCheckOut');
+  const nightsField = document.getElementById('voucherNights');
+  const guestsField = document.getElementById('voucherGuests');
+  const roomsField = document.getElementById('voucherRooms');
+  const extraField = document.getElementById('voucherExtra');
+  const accomField = document.getElementById('voucherAccommodation');
+  const extraChargeField = document.getElementById('voucherExtraCharge');
+  const advanceField = document.getElementById('voucherAdvance');
+  const additionalField = document.getElementById('voucherAdditional');
+  const generateBtn = document.getElementById('generateVoucher');
+  const downloadBtn = document.getElementById('downloadVoucher');
+  const output = document.getElementById('voucherOutput');
+
+  if (search && suggestions) {
+    search.addEventListener('input', e => {
+      const term = e.target.value.toLowerCase().trim();
+      suggestions.innerHTML = '';
+      if (term.length < 2) {
+        suggestions.style.display = 'none';
+        return;
+      }
+      const matches = bookingsList.filter(b =>
+        b.guestName.toLowerCase().includes(term) || b.contactNo.includes(term)
+      );
+      if (matches.length) {
+        suggestions.style.display = 'block';
+        matches.forEach(b => {
+          const div = document.createElement('div');
+          div.className = 'suggestion-item';
+          div.textContent = `${b.guestName} (${b.contactNo})`;
+          div.addEventListener('click', () => {
+            nameField.value = b.guestName;
+            contactField.value = b.contactNo;
+            checkInField.value = b.checkIn;
+            checkOutField.value = b.checkOut;
+            nightsField.value = Math.ceil((new Date(b.checkOut) - new Date(b.checkIn)) / 86400000);
+            roomsField.value = `${b.numRooms} ${b.roomType}`;
+            advanceField.value = b.advance || 0;
+            search.value = b.guestName;
+            suggestions.style.display = 'none';
+          });
+          suggestions.appendChild(div);
+        });
+      } else {
+        suggestions.style.display = 'none';
+      }
+    });
+
+    document.addEventListener('click', e => {
+      if (!search.contains(e.target) && !suggestions.contains(e.target)) {
+        suggestions.style.display = 'none';
+      }
+    });
+  }
+
+  if (generateBtn && output) {
+    generateBtn.addEventListener('click', () => {
+      const name = nameField.value.trim();
+      if (!name) {
+        alert('Please enter guest name');
+        return;
+      }
+      const ci = checkInField.value;
+      const co = checkOutField.value;
+      let nights = parseInt(nightsField.value, 10);
+      if (!nights && ci && co) {
+        nights = Math.ceil((new Date(co) - new Date(ci)) / 86400000);
+      }
+      const rooms = roomsField.value.trim();
+      const guests = guestsField.value.trim();
+      const extra = extraField.value.trim();
+      const accom = parseFloat(accomField.value) || 0;
+      const extraCharge = parseFloat(extraChargeField.value) || 0;
+      const advance = parseFloat(advanceField.value) || 0;
+      const additional = additionalField.value.trim();
+
+      const total = accom + extraCharge;
+      const pending = total - advance;
+
+      const formatDate = d => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+
+      output.innerHTML = `
+        <div style="max-width:800px;margin:0 auto;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:2px;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,0.1);font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+          <div style="background:white;border-radius:13px;padding:40px;position:relative;">
+            <div style="text-align:center;margin-bottom:30px;">
+              <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:32px;font-weight:bold;margin-bottom:8px;letter-spacing:2px;">HIGHFIELD VILLA</div>
+              <div style="color:#7f8c8d;font-size:16px;margin-bottom:20px;font-weight:300;">Peaceful Getaway in the Hills</div>
+              <div style="background:linear-gradient(90deg,#667eea,#764ba2);height:3px;width:100px;margin:0 auto;border-radius:2px;"></div>
+            </div>
+            <h2 style="text-align:center;color:#2c3e50;margin-bottom:30px;font-size:24px;font-weight:600;">BOOKING VOUCHER</h2>
+
+            <div style="margin-bottom:20px;">
+              <h3 style="color:#2c3e50;margin-bottom:5px;">Booking Dates</h3>
+              <p style="margin:0;color:#2c3e50;">Check-in: ${formatDate(ci)}</p>
+              <p style="margin:0;color:#2c3e50;">Check-out: ${formatDate(co)}</p>
+              <p style="margin:0;color:#2c3e50;">Duration: ${nights || ''} Night${nights==1?'':'s'}</p>
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <h3 style="color:#2c3e50;margin-bottom:5px;">Guest Details</h3>
+              ${guests ? `<p style="margin:0;color:#2c3e50;">Total Guests: ${guests}</p>` : ''}
+              ${rooms ? `<p style="margin:0;color:#2c3e50;">Rooms Booked: ${rooms}</p>` : ''}
+              ${extra ? `<p style="margin:0;color:#2c3e50;">Extra Bedding: ${extra}</p>` : ''}
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <h3 style="color:#2c3e50;margin-bottom:5px;">Tariff Details</h3>
+              <p style="margin:0;color:#2c3e50;">Accommodation: ₹${accom.toLocaleString('en-IN')}</p>
+              <p style="margin:0;color:#2c3e50;">Extra Bedding: ₹${extraCharge.toLocaleString('en-IN')}</p>
+              <p style="margin:0;color:#2c3e50;">Total Amount: ₹${total.toLocaleString('en-IN')}</p>
+              <p style="margin:0;color:#2c3e50;">Advance Paid: ₹${advance.toLocaleString('en-IN')}</p>
+              <p style="margin:0;color:#2c3e50;">Pending Amount: ₹${pending.toLocaleString('en-IN')}</p>
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <h3 style="color:#2c3e50;margin-bottom:5px;">Pet Policy</h3>
+              <p style="margin:0;color:#2c3e50;">Pets allowed at no extra charge</p>
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <h3 style="color:#2c3e50;margin-bottom:5px;">Bonfire (optional)</h3>
+              <p style="margin:0;color:#2c3e50;">Available on request @ ₹1,000 per session</p>
+              <p style="margin:0;color:#2c3e50;">Children above the age of 10 years to be considered as adults and to be counted towards booking of room.</p>
+            </div>
+
+            ${additional ? `<div style="margin-bottom:20px;color:#2c3e50;">${additional}</div>` : ''}
+
+            <div style="text-align:center;margin-top:30px;">
+              <p style="margin:0;color:#2c3e50;">🏡 Highfield Villa</p>
+              <p style="margin:0;color:#2c3e50;">📍 <a href="https://maps.app.goo.gl/NchMnUKtLrxcbPP48?g_st=com.google.maps.preview.copy" target="_blank">Location</a></p>
+              <p style="margin:0;color:#2c3e50;">📞 8427228937</p>
+            </div>
+          </div>
+        </div>`;
+
+      output.style.display = 'block';
+    });
+  }
+
+  if (downloadBtn && output) {
+    downloadBtn.addEventListener('click', () => {
+      const content = output.innerHTML;
+      if (!content || output.style.display === 'none') {
+        alert('Please generate the voucher first.');
+        return;
+      }
+      const captureDiv = document.createElement('div');
+      captureDiv.style.cssText = `position: fixed; top: -9999px; left: -9999px; width: 800px; background: white;`;
+      captureDiv.innerHTML = content;
+      document.body.appendChild(captureDiv);
+
+      if (typeof html2canvas !== 'undefined') {
+        html2canvas(captureDiv, { backgroundColor: '#ffffff', scale: 2, useCORS: true, allowTaint: true, width: 800, height: captureDiv.scrollHeight })
+          .then(canvas => {
+            const link = document.createElement('a');
+            link.download = `Highfield_Villa_Voucher_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            document.body.removeChild(captureDiv);
+          })
+          .catch(() => {
+            openVoucherWindow(content);
+            document.body.removeChild(captureDiv);
+          });
+      } else {
+        openVoucherWindow(content);
+        document.body.removeChild(captureDiv);
+      }
+    });
+  }
+
+  function openVoucherWindow(content) {
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Booking Voucher - Highfield Villa</title><meta charset="UTF-8"><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script></head><body>
+      <div id="voucher-content">${content}</div>
+      <div style="text-align:center;margin:20px 0;"><button onclick="downloadImg()" style="padding:12px 24px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:6px;cursor:pointer;margin-right:10px;">Download as Image</button><button onclick="window.close()" style="padding:12px 24px;background:linear-gradient(135deg,#95a5a6 0%,#7f8c8d 100%);color:white;border:none;border-radius:6px;cursor:pointer;">Close Window</button></div>
+      <script>function downloadImg(){const el=document.getElementById('voucher-content');html2canvas(el,{backgroundColor:'#ffffff',scale:2,useCORS:true,allowTaint:true}).then(c=>{const a=document.createElement('a');a.download='Highfield_Villa_Voucher_'+Date.now()+'.png';a.href=c.toDataURL('image/png');a.click();});}</script>
+    </body></html>`);
     printWindow.document.close();
     printWindow.focus();
   }
 };
 
 // Initialize billing when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeBilling);
+document.addEventListener('DOMContentLoaded', () => {
+  initializeBilling();
+  initializeVoucher();
+});
