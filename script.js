@@ -887,6 +887,7 @@ const initializeVoucher = () => {
       if (!nights && ci && co) {
         nights = Math.ceil((new Date(co) - new Date(ci)) / 86400000);
       }
+      const contact = contactField.value.trim();
       const rooms = roomsField.value.trim();
       const guests = guestsField.value.trim();
       const extra = extraField.value.trim();
