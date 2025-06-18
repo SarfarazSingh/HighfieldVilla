@@ -957,7 +957,7 @@ const initializeVoucher = () => {
 
             <div style="text-align:center;margin-top:30px;">
               <p style="margin:0;color:#2c3e50;">🏡 Highfield Villa</p>
-              <p style="margin:0;color:#2c3e50;">📍 https://maps.app.goo.gl/NchMnUKtLrxcbPP48?g_st=com.google.maps.preview.copy</p>
+              <p style="margin:0;color:#2c3e50;">📍 https://maps.app.goo.gl/5MAC3Hr4zGiajSPR9</p>
               <p style="margin:0;color:#2c3e50;">📞 8427228937</p>
             </div>
           </div>
