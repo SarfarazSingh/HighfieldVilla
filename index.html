@@ -247,6 +247,7 @@
       <li class="active" data-tab="entry">Booking Entry</li>
       <li data-tab="availability">Room Availability</li>
       <li data-tab="calendar">Calendar View</li>
+      <li data-tab="voucher">Booking Voucher</li>
       <li data-tab="billing">Generate Bill</li>
     </ul>
 
@@ -311,6 +312,76 @@
 
     <!-- TAB: Calendar View -->
     <div id="calendar" class="tab"></div>
+
+    <!-- TAB: Booking Voucher -->
+    <div id="voucher" class="tab">
+      <h3>Generate Booking Voucher</h3>
+
+      <!-- Customer Search Section -->
+      <div class="customer-search-container">
+        <label for="voucherCustomerSearch">Search Existing Customer:</label>
+        <input type="text" id="voucherCustomerSearch" placeholder="Enter guest name or contact number" />
+        <div id="voucherCustomerSuggestions"></div>
+      </div>
+
+      <div class="billing-form">
+        <div>
+          <label for="voucherGuestName">Guest Name: <span style="color: red;">*</span></label>
+          <input type="text" id="voucherGuestName" required />
+        </div>
+        <div>
+          <label for="voucherContact">Contact Number:</label>
+          <input type="text" id="voucherContact" />
+        </div>
+        <div>
+          <label for="voucherCheckIn">Check-in Date:</label>
+          <input type="date" id="voucherCheckIn" />
+        </div>
+        <div>
+          <label for="voucherCheckOut">Check-out Date:</label>
+          <input type="date" id="voucherCheckOut" />
+        </div>
+        <div>
+          <label for="voucherNights">Number of Nights:</label>
+          <input type="number" id="voucherNights" min="1" />
+        </div>
+        <div>
+          <label for="voucherGuests">Total Guests:</label>
+          <input type="text" id="voucherGuests" />
+        </div>
+        <div>
+          <label for="voucherRooms">Rooms Booked:</label>
+          <input type="text" id="voucherRooms" />
+        </div>
+        <div>
+          <label for="voucherExtra">Extra Bedding:</label>
+          <input type="text" id="voucherExtra" />
+        </div>
+        <div>
+          <label for="voucherAccommodation">Accommodation Charge (₹):</label>
+          <input type="number" id="voucherAccommodation" min="0" step="0.01" value="0" />
+        </div>
+        <div>
+          <label for="voucherExtraCharge">Extra Bedding Charge (₹):</label>
+          <input type="number" id="voucherExtraCharge" min="0" step="0.01" value="0" />
+        </div>
+        <div>
+          <label for="voucherAdvance">Advance Paid (₹):</label>
+          <input type="number" id="voucherAdvance" min="0" step="0.01" value="0" />
+        </div>
+        <div class="full-width">
+          <label for="voucherAdditional">Additional Details:</label>
+          <input type="text" id="voucherAdditional" />
+        </div>
+      </div>
+
+      <div class="bill-actions">
+        <button id="generateVoucher" class="btn btn-primary">Generate Voucher</button>
+        <button id="downloadVoucher" class="btn btn-success">Download/Print PDF</button>
+      </div>
+
+      <div id="voucherOutput" style="display: none;"></div>
+    </div>
 
     <!-- TAB: Enhanced Billing -->
     <div id="billing" class="tab">
