@@ -920,7 +920,7 @@ const initializeVoucher = () => {
             <div style="margin-bottom:20px;">
               <h3 style="color:#2c3e50;margin-bottom:5px;">Guest Details</h3>
               <p style="margin:0;color:#2c3e50;">Guest Name: ${name}</p>
-              ${contact ? `<p style="margin:0;color:#2c3e50;">Contact No.: ${contact}</p>` : ''}
+              <p style="margin:0;color:#2c3e50;">Contact No.: ${contact}</p>
               ${guests ? `<p style="margin:0;color:#2c3e50;">Total Guests: ${guests}</p>` : ''}
               ${rooms ? `<p style="margin:0;color:#2c3e50;">Rooms Booked: ${rooms}</p>` : ''}
               ${extra ? `<p style="margin:0;color:#2c3e50;">Extra Bedding: ${extra}</p>` : ''}
