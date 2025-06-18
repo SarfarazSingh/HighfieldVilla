@@ -937,18 +937,21 @@ const initializeVoucher = () => {
               <h3 style="color:#2c3e50;margin-bottom:5px;">Pet Policy</h3>
               <p style="margin:0;color:#2c3e50;">Pets allowed at no extra charge</p>
             </div>
+              <div style="margin-bottom:20px;">
+              <h3 style="color:#2c3e50;margin-bottom:5px;">Child Charges</h3>
+              <p style="margin:0;color:#2c3e50;">Children above the age of 10 years to be considered as adults and to be counted towards booking of room.</p>
+            </div>
 
             <div style="margin-bottom:20px;">
               <h3 style="color:#2c3e50;margin-bottom:5px;">Bonfire (optional)</h3>
               <p style="margin:0;color:#2c3e50;">Available on request @ ₹1,000 per session</p>
-              <p style="margin:0;color:#2c3e50;">Children above the age of 10 years to be considered as adults and to be counted towards booking of room.</p>
             </div>
 
             ${additional ? `<div style="margin-bottom:20px;color:#2c3e50;">${additional}</div>` : ''}
 
             <div style="text-align:center;margin-top:30px;">
               <p style="margin:0;color:#2c3e50;">🏡 Highfield Villa</p>
-              <p style="margin:0;color:#2c3e50;">📍 <a href="https://maps.app.goo.gl/NchMnUKtLrxcbPP48?g_st=com.google.maps.preview.copy" target="_blank">Location</a></p>
+              <p style="margin:0;color:#2c3e50;">📍 https://maps.app.goo.gl/NchMnUKtLrxcbPP48?g_st=com.google.maps.preview.copy</p>
               <p style="margin:0;color:#2c3e50;">📞 8427228937</p>
             </div>
           </div>
