@@ -909,7 +909,7 @@ const initializeVoucher = () => {
               <div style="color:#7f8c8d;font-size:16px;margin-bottom:20px;font-weight:300;">Peaceful Getaway in the Hills</div>
               <div style="background:linear-gradient(90deg,#667eea,#764ba2);height:3px;width:100px;margin:0 auto;border-radius:2px;"></div>
             </div>
-            <h2 style="text-align:center;color:#2c3e50;margin-bottom:30px;font-size:24px;font-weight:600;">BOOKING VOUCHER</h2>
+            <h2 style="text-align:center;color:#2c3e50;margin-bottom:30px;font-size:24px;font-weight:600;">BOOKING VOUCHER for ${name}</h2>
 
             <div style="margin-bottom:20px;">
               <h3 style="color:#2c3e50;margin-bottom:5px;">Booking Dates</h3>
