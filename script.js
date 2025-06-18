@@ -13,7 +13,7 @@ const summary = document.getElementById("dashboardSummary");
 
 const datesBetween = (s, e) => {
   const arr = [];
-  for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1))
+  for (let d = new Date(s); d < e; d.setDate(d.getDate() + 1))
     arr.push(d.toISOString().slice(0, 10));
   return arr;
 };
@@ -25,7 +25,7 @@ const isAvailable = async (type, num, inD, outD, ignoreId = null) => {
     const booked = list.reduce((sum, b) => {
       if (b.roomType !== type || (ignoreId && b.id === ignoreId)) return sum;
       const d = new Date(date);
-      return (d >= new Date(b.checkIn) && d <= new Date(b.checkOut)) ? sum + +b.numRooms : sum;
+      return (d >= new Date(b.checkIn) && d < new Date(b.checkOut)) ? sum + +b.numRooms : sum;
     }, 0);
     return booked + +num <= (type === "Deluxe" ? 3 : 2);
   });
@@ -35,7 +35,7 @@ const updateSummary = () => {
   const total = bookingsList.length;
   const advance = bookingsList.reduce((sum, b) => sum + Number(b.advance), 0);
   const today = new Date().toISOString().slice(0, 10);
-  const occupiedToday = bookingsList.filter(b => today >= b.checkIn && today <= b.checkOut)
+  const occupiedToday = bookingsList.filter(b => today >= b.checkIn && today < b.checkOut)
     .reduce((acc, b) => {
       acc[b.roomType] = (acc[b.roomType] || 0) + +b.numRooms;
       return acc;
@@ -166,7 +166,7 @@ if (checkAvailBtn && availDate && availabilityResult) {
         const checkIn = new Date(b.checkIn);
         const checkOut = new Date(b.checkOut);
         // Check if selected date falls within booking period
-        return (selectedDate >= checkIn && selectedDate <= checkOut) ? sum + parseInt(b.numRooms) : sum;
+        return (selectedDate >= checkIn && selectedDate < checkOut) ? sum + parseInt(b.numRooms) : sum;
       }, 0);
       const available = (t === "Deluxe" ? 3 : 2) - booked;
       return `<span style="color: ${available > 0 ? '#27ae60' : '#e74c3c'}; font-weight: bold;">${t}: ${available} available</span>`;
